@@ -27,7 +27,6 @@ async function hasUser(req,res,next){
         res.locals.user = user;
         next();
     }catch(err){
-        console.log(err);
         return res.sendStatus(500);
     }
 

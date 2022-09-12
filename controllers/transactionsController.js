@@ -8,8 +8,7 @@ const transactions = async (req,res)=>{
 
     try{
         const usertransactions = await db.collection('transactions').find({userId: client._id}).toArray();
-        console.log(usertransactions)
-        res.sendStatus(201);
+        res.send(usertransactions);
 
 
     }catch(err){
@@ -19,14 +18,16 @@ const transactions = async (req,res)=>{
 
 const add = async ( req,res ) => {
     const client = res.locals.user;
+    
     const { operation, amount, description } = req.body;
+
     let newTransaction = {
         userId: client._id,
         description: description,
         amount: amount,
         operation: operation,
-        date: dayjs().format('DD/MM/YY')
-    }
+        date: dayjs().format('DD/MM')
+    };
 
     try{
         db.collection('transactions').insertOne(newTransaction);

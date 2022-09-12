@@ -20,10 +20,8 @@ const loginSchema = joi.object({
 /* REGISTER */
 const register = async (req,res)=>{
     const validation = registerSchema.validate(req.body,{abortEarly:true});
-    console.log(req.body)
     if(validation.error){
         res.sendStatus(422);
-        console.log('no match')
         return;
     };
 
@@ -42,11 +40,11 @@ const register = async (req,res)=>{
             res.sendStatus(201);
         } else {
             res.sendStatus(422);
-        }
+        };
 
     }catch(err){
         res.send(err);
-    }
+    };
 };
 /* LOGIN */
 const login = async (req,res)=>{
@@ -55,27 +53,37 @@ const login = async (req,res)=>{
     if (validation.error){
         res.sendStatus(422);
         return;
-    }
-    console.log(email,password)
+    };
 
     try{
         const user = await db.collection('clients').findOne({email});
-        console.log(user.password, 'user')
         if (user && bcrypt.compareSync(password, user.password)){
             const token = uuid();
             await db.collection('sessions').insertOne({
                 userId:user._id,
                 token
             });
+            res.send({token:token,name:user.name});
         } else {
             res.sendStatus(422);
             return;
-        }
-        res.send(token);
+        };
 
     }catch(err){
         res.send(err);
-    }
+    };
 };
 
-export {login, register};
+const logout = async (req,res)=>{
+    const { authorization } = req.headers;
+    const token = authorization?.replace('Bearer ', '');
+    console.log(token)
+    try{
+        await db.collection('sessions').deleteOne({token: token});
+    }catch(err){
+        res.send(err);
+    }
+
+};
+
+export {login, register, logout};
