@@ -77,7 +77,6 @@ const login = async (req,res)=>{
 const logout = async (req,res)=>{
     const { authorization } = req.headers;
     const token = authorization?.replace('Bearer ', '');
-    console.log(token)
     try{
         await db.collection('sessions').deleteOne({token: token});
     }catch(err){
